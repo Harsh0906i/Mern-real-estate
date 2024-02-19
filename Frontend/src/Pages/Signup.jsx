@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { Link,useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 export default function Signup() {
   const [formData, setFormData] = useState({})
   const [error, seterror] = useState(null)
   const [loading, setloading] = useState(false)
-  const navigate=useNavigate();
+  const navigate = useNavigate();
 
   function handleChange(e) {
     setFormData({
