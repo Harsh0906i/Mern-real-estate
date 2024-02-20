@@ -40,7 +40,7 @@ router.post('/signin', async (req, res, next) => {
         next(error);
     }
 })
-router.post('/google', async (req, res, next) => {   //google sign-in
+router.post('/google', async (req, res, next) => {
     try {
         const { email } = req.body;
         const user = await userSchema.findOne({ email })

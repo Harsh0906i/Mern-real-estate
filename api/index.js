@@ -28,7 +28,7 @@ main()
         console.log(err);
     });
 async function main() {
-    await mongoose.connect(process.env.MONGO);
+    await mongoose.connect(process.env.MONGO2);
 };
 
 app.post('/signup', (req, res) => {
