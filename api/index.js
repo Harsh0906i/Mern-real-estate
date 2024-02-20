@@ -5,11 +5,12 @@ const mongoose = require('mongoose');
 const UserRouter = require('./routes/User');
 const AuthRouter = require('./routes/auth');
 const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieParser());
 app.use('/api/user', UserRouter);
-app.use('/api/auth', AuthRouter);
 app.use('/api/auth', AuthRouter);
 app.use((err, req, res, next) => {
     const statuscode = err.statusCode || 500;
