@@ -52,7 +52,7 @@ export default function Signin() {
         <input type="email" placeholder='Email...' className='border p-3 rounded-lg' id='email' onChange={handleChange} />
         <input type="password" placeholder='Password...' className='border p-3 rounded-lg' id='password' onChange={handleChange} />
         <button className='bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95' >
-          {loading ? 'Loading...' : 'Sign In'}
+         Sign In
         </button>
         <Oauth />
       </form>

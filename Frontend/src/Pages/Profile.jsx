@@ -3,7 +3,18 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useRef } from 'react'
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 import { app } from '../Firebas'
-import { updateUserStart, updateUserSuccess, updateUserFaliure, deleteUserFaliure, deleteUserStart, deleteUserSuccess } from '../Redux/user/userSlice'
+import {
+  updateUserStart,
+  updateUserSuccess,
+  updateUserFaliure,
+  deleteUserFaliure,
+  deleteUserStart,
+  deleteUserSuccess,
+  SignOutUserStart,
+  SignOutUserSuccess,
+  SignOutUserFaliure,
+} from '../Redux/user/userSlice'
+import { Link } from 'react-router-dom'
 
 export default function Profile() {
   const { currentUser, loading, error } = useSelector((state) => state.user)
@@ -89,6 +100,26 @@ export default function Profile() {
 
   }
 
+  async function HandleSignOut() {
+    try {
+      dispatch(SignOutUserStart());
+      const res = await fetch('/api/auth/signout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await res.json();
+      if (data.success === false) {
+        dispatch(SignOutUserFaliure(data.message))
+        return;
+      }
+      dispatch(SignOutUserSuccess(data));
+    } catch (error) {
+      dispatch(SignOutUserFaliure(error.message))
+    }
+  }
+
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
@@ -113,10 +144,11 @@ export default function Profile() {
         <input type="text" placeholder='username' defaultValue={currentUser.username} onChange={HandleUpdate} className='border p-3 rounded-lg' id='username' />
         <input type="email" placeholder='email' defaultValue={currentUser.email} className='border p-3 rounded-lg' id='email' onChange={HandleUpdate} />
         <button disabled={loading} className='bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-90'>{loading ? 'Loading...' : 'Update'}</button>
+        <Link to={'/create-listing'} className='bg-green-600 text-white p-3 rounded-lg uppercase text-center hover:opacity-95' >Create Listing</Link>
       </form>
       <div className='flex justify-between mt-5'>
         <span onClick={handleDelete} className='text-red-700 cursor-pointer'>Delete Account</span>
-        <span className='text-red-700 cursor-pointer'>Sign Out</span>
+        <span onClick={HandleSignOut} className='text-red-700 cursor-pointer'>Sign Out</span>
       </div>
       <p className='text-red-700 mt-5'>{error ? error : ''}</p>
       <p className='text-green-600 mt-5'>{successUpdate ? 'User updated successfully!' : ''}</p>
