@@ -26,17 +26,16 @@ router.post('/update/:id', verifyUser, async (req, res, next) => {
     } catch (error) {
         next(error)
         console.log(error)
-
     }
-})
+});
 
-router.delete('/delete/:id', verifyUser, async (req, res) => {
-    if (req.user.id !== req.params.id) {
+router.delete('/delete/:id', verifyUser, async (req, res, next) => {
+    if ((req.user.id || req.user._id) !== req.params.id) {
         return res.json('you can only delete your own account');
     }
     try {
-        await userSchema.findByIdAndDelete(req.params.id)
-        res.status(200).json('user has been deleted');
+        await userSchema.findByIdAndDelete(req.params.id);
+        res.status(200).json('user has been deleted!');
     } catch (error) {
         next(error)
     }
