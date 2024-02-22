@@ -25,6 +25,8 @@ export default function Profile() {
   const fileRef = useRef(null)
   const dispatch = useDispatch();
   const [successUpdate, setsuccessUpdate] = useState(false);
+  const [showListingErr, setshowListingErr] = useState(false);
+  const [userListing, setuserListing] = useState({});
 
   useEffect(() => {
     if (file) {
@@ -119,6 +121,39 @@ export default function Profile() {
       dispatch(SignOutUserFaliure(error.message))
     }
   }
+  async function handleShowListing() {
+    try {
+      setshowListingErr(false)
+      const res = await fetch(`/api/listing/${currentUser._id}`);
+      const data = await res.json();
+      if (data.success === false) {
+        setshowListingErr(true);
+        return;
+      }
+      setuserListing(data)
+      console.log(data);
+    } catch (error) {
+      setshowListingErr(true);
+    }
+  }
+  async function HandleListingDelete(listingId) {
+    console.log(listingId);
+    try {
+      const res = await fetch(`/api/listing/delete/${listingId}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      console.log(data)
+      if (data.success === false) {
+        console.log(data);
+        return;
+      }
+      setuserListing((prev) => prev.filter((listing) => listing._id !== listingId)
+      )
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
 
   return (
     <div className='p-3 max-w-lg mx-auto'>
@@ -152,6 +187,28 @@ export default function Profile() {
       </div>
       <p className='text-red-700 mt-5'>{error ? error : ''}</p>
       <p className='text-green-600 mt-5'>{successUpdate ? 'User updated successfully!' : ''}</p>
+      <button className='text-green-700 w-full' onClick={handleShowListing}>Show your listings</button>
+      {showListingErr && <p className='text-red-700' >Error showing listing</p>}
+      <div className='flex flex-col gap-4'>
+        {userListing && userListing.length > 0 &&
+          userListing.map((listing) =>
+            <div key={listing._id} className='border rounded-lg gap-4 p-3 flex justify-between items-center'>
+              <Link to={`/listing/${listing._id}`}>
+                <img className='h-16 w-16 object-contain' src={listing.image[0]} alt="listing cover" />
+              </Link>
+              <Link className='flex-1 text-slate-700 font-semibold hover:underline truncate' to={`/listing/${listing._id}`}>
+                <p>{listing.name}</p>
+              </Link>
+              <div className='flex flex-col items-center'>
+                <button onClick={() => { HandleListingDelete(listing._id) }} className='text-red-700 uppercase'>Delete</button>
+                <Link to={`/updateListing/${listing._id}`}>
+                  <button className='text-green-700 uppercase'>Edit</button>
+                </Link>
+              </div>
+            </div>
+          )
+        }
+      </div>
     </div>
   )
 }

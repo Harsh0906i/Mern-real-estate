@@ -41,5 +41,20 @@ router.delete('/delete/:id', verifyUser, async (req, res, next) => {
     }
 });
 
+router.get('/:id', verifyUser, async (req, res, next) => {
+    try {
+        const user = await userSchema.findById(req.params.id);
+        if (!user) {
+            next(errorHandeler(404, 'User not found'));
+            return;
+        }
+
+        res.status(200).json(user);
+
+    } catch (error) {
+        next(error);
+    }
+})
+
 
 module.exports = router
