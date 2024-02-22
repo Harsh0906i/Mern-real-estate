@@ -4,7 +4,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const userSchema = require('../models/user');
 const verifyUser = require('../utils/verifyUser');
-
+const Listing = require('../models/listing');
 router.post('/update/:id', verifyUser, async (req, res, next) => {
     if ((req.user.id || req.user._id) !== req.params.id) {
         return next(errorHandeler(401, 'You can update your own account'))
@@ -41,6 +41,20 @@ router.delete('/delete/:id', verifyUser, async (req, res, next) => {
     }
 });
 
+router.get('/listing/:id', verifyUser, async (req, res, next) => {
+    if ((req.user.id || req.user._id) === req.params.id) {
+        try {
+            const listings = await Listing.find({ userRef: req.params.id });
+            res.status(200).json(listings);
+        } catch (error) {
+            next(error);
+        }
+    } else {
+        return next(errorHandeler(401, 'You can only view your own listings!'));
+    }
+});
+
+
 router.get('/:id', verifyUser, async (req, res, next) => {
     try {
         const user = await userSchema.findById(req.params.id);
@@ -55,6 +69,8 @@ router.get('/:id', verifyUser, async (req, res, next) => {
         next(error);
     }
 })
+
+
 
 
 module.exports = router

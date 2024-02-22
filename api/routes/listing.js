@@ -14,20 +14,6 @@ router.post('/create', verifyUser, async (req, res, next) => {
     }
 });
 
-router.get('/:id', verifyUser, async (req, res, next) => {
-    if ((req.user.id || req.user._id) === req.params.id) {
-        try {
-            const listing = await Listing.find({ userRef: req.params.id })
-            res.status(200).send(listing);
-        } catch (error) {
-            return next(error)
-        }
-    }
-    else {
-        next(errorHandeler(401, 'You can only view your own listing!'));
-    }
-});
-
 router.delete('/delete/:id', verifyUser, async (req, res, next) => {//req.user.id comming from verifyUser
     const listing = await Listing.findById(req.params.id);
     console.log(req.params.id);
@@ -74,40 +60,52 @@ router.get('/getListing/:id', async (req, res, next) => {
         next(error)
     }
 })
-router.get('/search', async (req, res, next) => {
+router.get('/get', async (req, res, next) => {
     try {
         const limit = parseInt(req.query.limit) || 9;
         const startIndex = parseInt(req.query.startIndex) || 0;
         let offer = req.query.offer;
+
         if (offer === undefined || offer === 'false') {
-            offer = { $in: [false, true] }
+            offer = { $in: [false, true] };
         }
+
         let furnished = req.query.furnished;
 
         if (furnished === undefined || furnished === 'false') {
-            furnished = { $in: [false, true] }
+            furnished = { $in: [false, true] };
         }
+
         let parking = req.query.parking;
+
         if (parking === undefined || parking === 'false') {
-            parking = { $in: [false, true] }
+            parking = { $in: [false, true] };
         }
+
         let type = req.query.type;
+
         if (type === undefined || type === 'all') {
-            type = { $in: ['sale', 'rent'] }
+            type = { $in: ['sale', 'rent'] };
         }
+
         const searchTerm = req.query.searchTerm || '';
+
         const sort = req.query.sort || 'createdAt';
+
         const order = req.query.order || 'desc';
-        const listing = await Listing.find({
-            name: { $regex: searchTerm, $option: 'i' },
+
+        const listings = await Listing.find({
+            name: { $regex: searchTerm, $options: 'i' },
             offer,
             furnished,
             parking,
-            type
-        }).sort({ [sort]: order }).limit(limit).skip(startIndex);
-        return res.status(200).json(listing)
-
-
+            type,
+        })
+            .sort({ [sort]: order })
+            .limit(limit)
+            .skip(startIndex);
+        console.log(listings)
+        return res.status(200).json(listings);
     } catch (error) {
         next(error);
     }
