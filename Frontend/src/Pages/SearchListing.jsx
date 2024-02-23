@@ -15,6 +15,7 @@ export default function SearchListing() {
     const navigate = useNavigate();
 
     const [loading, setloading] = useState(false);
+    const [showMore, setshowMore] = useState(false);
     const [listings, setlistings] = useState([]);
     console.log(sidebarData);
     console.log(listings);
@@ -76,13 +77,34 @@ export default function SearchListing() {
             const searchQuery = newurl.toString();
             const res = await fetch(`/api/listing/get?${searchQuery}`);
             const data = await res.json();
-            console.log(data)
+            if (data.length > 8) {
+                setshowMore(true);
+            }
             setlistings(data);
+
             setloading(false);
         }
         fetchList()
 
     }, [location.search])
+
+    async function showMoreButton() {
+        const numberOfListing = listings.length;
+        const startIndex = numberOfListing;
+        const UrlParams = new URLSearchParams(location.search);
+        UrlParams.set('startIndex', startIndex);
+        const searchQuery = UrlParams.toString();
+        const res = await fetch(`/api/listing/get?${searchQuery}`);
+        const data = await res.json();
+        if (data.length < 9) {
+            setshowMore(false)
+        }
+        else{
+            setshowMore(false)
+        }
+        setlistings([ ...listings, ...data ]);
+
+    }
     return (
         <div className="flex flex-col md:flex-row">
             <div className="p-7 border-b-2 md:border-r-2 md:min-h-screen">
@@ -149,6 +171,13 @@ export default function SearchListing() {
                             <ListingItem key={item._id} listings={item} />
                         )
                     }
+                    {showMore && (
+                        <button className="text-green-700 hover:underline p-7 text-center w-full" onClick={
+                            showMoreButton
+                        } >
+                            Show more
+                        </button>
+                    )}
                 </div>
             </div>
         </div>
