@@ -34,7 +34,7 @@ router.post('/signin', async (req, res, next) => {
         if (!validPassword) {
             res.status(404).send('Wrong credentials!');
         }
-        const token = jwt.sign({ id: Valid._id }, process.env.JWT)
+        const token = jwt.sign({ id: Valid._id }, "cnbfR@@^bsbsdbsbg$@")
         res.cookie('access_token', token, { httpOnly: true }).status(200).json(Valid);
 
     } catch (error) {
@@ -46,7 +46,7 @@ router.post('/google', async (req, res, next) => {
         const { email } = req.body;
         const user = await userSchema.findOne({ email })
         if (user) {
-            const token = jwt.sign({ _id: user._id }, process.env.JWT);
+            const token = jwt.sign({ _id: user._id }, "cnbfR@@^bsbsdbsbg$@");
             res.cookie('access_token', token, { httpOnly: true }).status(200).json(user);
         }
         else {
@@ -54,7 +54,7 @@ router.post('/google', async (req, res, next) => {
             const hash = await bcrypt.hash(generatedPassword, 10);
             const newUser = await new userSchema({ username: req.body.name, email: req.body.email, password: hash, avatar: req.body.photo })
             await newUser.save();
-            const token = jwt.sign({ id: newUser._id }, process.env.JWT);
+            const token = jwt.sign({ id: newUser._id },"cnbfR@@^bsbsdbsbg$@");
             res.cookie('access_token', token, { httpOnly: true }).status(200).json(newUser);
         }
     } catch (error) {

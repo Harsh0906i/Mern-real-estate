@@ -40,7 +40,7 @@ main()
         console.log(err);
     });
 async function main() {
-    await mongoose.connect(process.env.MONGO2);
+    await mongoose.connect('mongodb+srv://harshitsingharya24:rFkHIdbVHfG8BqIe@cluster0.jwjbl5k.mongodb.net/?retryWrites=true&w=majority');
 };
 
 app.listen(8080, () => {
